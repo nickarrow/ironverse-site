@@ -1,3 +1,13 @@
+/* Hide the filename/page-title that appears at the top of each page */
+.header .page-title {
+  display: none;
+}
+
+/* Fix code blocks being centered */
+pre, code, .el-pre, .markdown-preview-view pre {
+  text-align: left !important;
+}
+
 /* Fix for text not wrapping properly */
 .markdown-preview-sizer,
 .markdown-preview-section,
