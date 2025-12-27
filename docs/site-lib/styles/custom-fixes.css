@@ -44,3 +44,20 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
+
+/* Left-align content instead of center */
+#center-content > .obsidian-document {
+  align-items: flex-start !important;
+}
+
+.markdown-preview-view p,
+.markdown-preview-view blockquote,
+.markdown-preview-view li,
+.markdown-preview-view h1,
+.markdown-preview-view h2,
+.markdown-preview-view h3,
+.markdown-preview-view h4,
+.markdown-preview-view h5,
+.markdown-preview-view h6 {
+  text-align: left;
+}
