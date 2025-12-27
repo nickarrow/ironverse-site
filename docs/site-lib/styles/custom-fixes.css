@@ -1,0 +1,46 @@
+/* Fix for text not wrapping properly */
+.markdown-preview-sizer,
+.markdown-preview-section,
+.el-p,
+.el-blockquote,
+.el-h1,
+.el-h2,
+.el-h3,
+.el-h4,
+.el-h5,
+.el-h6 {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+/* Ensure paragraphs wrap properly */
+.markdown-preview-view p,
+.markdown-preview-view blockquote,
+.markdown-preview-view li {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+/* Fix the container width constraints */
+.markdown-preview-sizer {
+  max-width: var(--line-width, 40em) !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* Ensure inline mechanics elements don't break layout */
+.iv-inline-mechanics {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Fix potential overflow from long links or spans */
+.internal-link,
+.iv-inline-link,
+.iv-inline-track-name,
+.iv-inline-move-name {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
