@@ -1,12 +1,17 @@
 /**
  * Iron Vault Link Fixer
  * Converts Iron Vault track/entity path spans to working links on the exported site.
+ * 
+ * Uses MutationObserver to handle SPA-style navigation where content is replaced
+ * without full page reloads.
  */
 (function() {
   let searchIndex = null;
+  let isProcessing = false;
 
   // Load the search index to resolve entity paths
   async function loadSearchIndex() {
+    if (searchIndex) return; // Already loaded
     try {
       const response = await fetch('site-lib/search-index.json');
       if (response.ok) {
@@ -45,10 +50,14 @@
 
   // Convert a span to a link
   function convertToLink(el, href) {
+    // Skip if already processed (parent is already a link or element is a link)
+    if (el.tagName === 'A' || el.closest('a[data-iv-processed]')) return;
+    
     const link = document.createElement('a');
     link.className = el.className;
     link.innerHTML = el.innerHTML;
     link.href = href;
+    link.setAttribute('data-iv-processed', 'true');
     
     // Copy all data attributes
     Array.from(el.attributes).forEach(function(attr) {
@@ -61,8 +70,9 @@
   }
 
   // Process track paths (full paths like "The Starforged (NickArrow)/Progress/...")
-  function processTrackPaths() {
-    document.querySelectorAll('span[data-track-path]').forEach(function(el) {
+  function processTrackPaths(container) {
+    const root = container || document;
+    root.querySelectorAll('span[data-track-path]').forEach(function(el) {
       const trackPath = el.getAttribute('data-track-path');
       if (!trackPath) return;
       
@@ -72,8 +82,9 @@
   }
 
   // Process entity paths (can be full paths or just filenames)
-  function processEntityPaths() {
-    document.querySelectorAll('span[data-entity-path]').forEach(function(el) {
+  function processEntityPaths(container) {
+    const root = container || document;
+    root.querySelectorAll('span[data-entity-path]').forEach(function(el) {
       const entityPath = el.getAttribute('data-entity-path');
       if (!entityPath) return;
       
@@ -92,14 +103,97 @@
     });
   }
 
-  // Main initialization
-  async function init() {
+  // Process all Iron Vault links in a container (or whole document)
+  async function processLinks(container) {
+    if (isProcessing) return;
+    isProcessing = true;
+    
     await loadSearchIndex();
-    processTrackPaths();
-    processEntityPaths();
+    processTrackPaths(container);
+    processEntityPaths(container);
+    
+    isProcessing = false;
   }
 
-  // Run immediately since this script is loaded dynamically after DOM is ready
-  // Use a small delay to ensure all dynamic content is loaded
-  setTimeout(init, 200);
+  // Debounce function to avoid processing too frequently
+  function debounce(func, wait) {
+    let timeout;
+    return function() {
+      const context = this;
+      const args = arguments;
+      clearTimeout(timeout);
+      timeout = setTimeout(function() {
+        func.apply(context, args);
+      }, wait);
+    };
+  }
+
+  // Debounced version of processLinks
+  const debouncedProcessLinks = debounce(function() {
+    processLinks();
+  }, 100);
+
+  // Set up MutationObserver to watch for content changes (SPA navigation)
+  function setupObserver() {
+    const centerContent = document.getElementById('center-content');
+    if (!centerContent) {
+      // Fallback to body if center-content doesn't exist
+      return;
+    }
+
+    const observer = new MutationObserver(function(mutations) {
+      // Check if any mutation added nodes that might contain Iron Vault elements
+      let shouldProcess = false;
+      for (const mutation of mutations) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          for (const node of mutation.addedNodes) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              // Check if the added node or its children have Iron Vault elements
+              if (node.querySelector && (
+                node.querySelector('span[data-track-path]') ||
+                node.querySelector('span[data-entity-path]') ||
+                node.matches('span[data-track-path]') ||
+                node.matches('span[data-entity-path]')
+              )) {
+                shouldProcess = true;
+                break;
+              }
+            }
+          }
+        }
+        if (shouldProcess) break;
+      }
+      
+      if (shouldProcess) {
+        debouncedProcessLinks();
+      }
+    });
+
+    observer.observe(centerContent, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  // Also listen for popstate (browser back/forward navigation)
+  window.addEventListener('popstate', function() {
+    setTimeout(function() {
+      processLinks();
+    }, 200);
+  });
+
+  // Main initialization
+  async function init() {
+    await processLinks();
+    setupObserver();
+  }
+
+  // Run when DOM is ready or immediately if already loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(init, 200);
+    });
+  } else {
+    setTimeout(init, 200);
+  }
 })();
