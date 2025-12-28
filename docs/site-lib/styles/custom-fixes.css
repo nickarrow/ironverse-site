@@ -8,6 +8,11 @@
   display: none;
 }
 
+/* Hide the first TOC entry (duplicate from page title) */
+#outline > .tree-item:first-child {
+  display: none;
+}
+
 /* Fix code blocks being centered */
 pre, code, .el-pre, .markdown-preview-view pre {
   text-align: left !important;
