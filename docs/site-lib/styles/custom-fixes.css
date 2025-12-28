@@ -87,6 +87,7 @@ pre, code, .el-pre, .markdown-preview-view pre {
   left: var(--sidebar-margin, 12px) !important;
   right: auto !important;
   top: var(--sidebar-margin, 12px) !important;
+  bottom: auto !important;
 }
 
 .markdown-preview-view p,
