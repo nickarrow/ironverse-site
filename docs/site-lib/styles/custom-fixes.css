@@ -102,14 +102,30 @@ pre, code, .el-pre, .markdown-preview-view pre {
 }
 
 /* Disable Iron Vault datasworn links - they don't work outside Obsidian */
-a[data-datasworn-id] {
+a[data-datasworn-id],
+a.external-link[data-datasworn-id] {
   pointer-events: none;
   text-decoration: none;
   color: inherit;
+  background: none !important;
+  background-image: none !important;
+  padding-right: 0 !important;
 }
 
 /* Hide the external link icon on datasworn links */
-a[data-datasworn-id]::after {
+a[data-datasworn-id]::after,
+a.external-link[data-datasworn-id]::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  background-image: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Also target the svg icon if it's a child element */
+a[data-datasworn-id] svg,
+a.external-link[data-datasworn-id] svg {
   display: none !important;
 }
 
