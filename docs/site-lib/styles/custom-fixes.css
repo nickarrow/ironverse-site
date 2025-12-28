@@ -108,19 +108,6 @@ pre, code, .el-pre, .markdown-preview-view pre {
   pointer-events: auto !important;
 }
 
-/* DEBUG: Bright colors to verify positioning - remove after confirmed working */
-#left-sidebar.is-collapsed .sidebar-topbar {
-  background-color: red !important;
-}
-
-#left-sidebar.is-collapsed .clickable-icon.sidebar-collapse-icon {
-  background-color: lime !important;
-}
-
-#left-sidebar.is-collapsed .clickable-icon.sidebar-collapse-icon svg {
-  stroke: yellow !important;
-}
-
 .markdown-preview-view p,
 .markdown-preview-view blockquote,
 .markdown-preview-view li,
