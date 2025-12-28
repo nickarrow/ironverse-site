@@ -11,10 +11,9 @@
       const response = await fetch('site-lib/search-index.json');
       if (response.ok) {
         searchIndex = await response.json();
-        console.log('[IV Links] Search index loaded');
       }
     } catch (e) {
-      console.warn('[IV Links] Could not load search index:', e);
+      // Silently fail - entity links with just filenames won't work
     }
   }
 
@@ -49,7 +48,7 @@
     const link = document.createElement('a');
     link.className = el.className;
     link.innerHTML = el.innerHTML;
-    link.style.cursor = 'pointer';
+    link.href = href;
     
     // Copy all data attributes
     Array.from(el.attributes).forEach(function(attr) {
@@ -58,19 +57,12 @@
       }
     });
     
-    // Set the href directly - the base tag should handle relative resolution
-    link.href = href;
-    
     el.parentNode.replaceChild(link, el);
-    console.log('[IV Links] Converted:', el.textContent, '->', href);
   }
 
   // Process track paths (full paths like "The Starforged (NickArrow)/Progress/...")
   function processTrackPaths() {
-    const elements = document.querySelectorAll('span[data-track-path]');
-    console.log('[IV Links] Found track elements:', elements.length);
-    
-    elements.forEach(function(el) {
+    document.querySelectorAll('span[data-track-path]').forEach(function(el) {
       const trackPath = el.getAttribute('data-track-path');
       if (!trackPath) return;
       
@@ -81,10 +73,7 @@
 
   // Process entity paths (can be full paths or just filenames)
   function processEntityPaths() {
-    const elements = document.querySelectorAll('span[data-entity-path]');
-    console.log('[IV Links] Found entity elements:', elements.length);
-    
-    elements.forEach(function(el) {
+    document.querySelectorAll('span[data-entity-path]').forEach(function(el) {
       const entityPath = el.getAttribute('data-entity-path');
       if (!entityPath) return;
       
@@ -98,8 +87,6 @@
         const resolvedPath = findPageByFilename(entityPath);
         if (resolvedPath) {
           convertToLink(el, resolvedPath);
-        } else {
-          console.warn('[IV Links] Could not resolve entity:', entityPath);
         }
       }
     });
@@ -107,15 +94,12 @@
 
   // Main initialization
   async function init() {
-    console.log('[IV Links] Initializing...');
     await loadSearchIndex();
     processTrackPaths();
     processEntityPaths();
-    console.log('[IV Links] Done');
   }
 
-  // Wait for everything to be ready
-  // Use a small delay to ensure dynamic includes have loaded
+  // Wait for everything to be ready with a small delay for dynamic includes
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
       setTimeout(init, 100);
