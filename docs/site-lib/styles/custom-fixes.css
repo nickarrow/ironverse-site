@@ -70,6 +70,25 @@ pre, code, .el-pre, .markdown-preview-view pre {
   align-items: flex-start !important;
 }
 
+/* Fix left sidebar toggle icon not visible on mobile */
+#left-sidebar .sidebar-collapse-icon {
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 100 !important;
+}
+
+#left-sidebar.is-collapsed .sidebar-topbar {
+  overflow: visible !important;
+}
+
+/* Ensure the icon is clickable and visible when sidebar is collapsed */
+#left-sidebar.is-collapsed .sidebar-collapse-icon {
+  position: fixed !important;
+  left: var(--sidebar-margin, 12px) !important;
+  right: auto !important;
+  top: var(--sidebar-margin, 12px) !important;
+}
+
 .markdown-preview-view p,
 .markdown-preview-view blockquote,
 .markdown-preview-view li,
