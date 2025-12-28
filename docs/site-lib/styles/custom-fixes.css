@@ -81,6 +81,12 @@ pre, code, .el-pre, .markdown-preview-view pre {
   top: 0 !important;
 }
 
+/* DEBUG: Test fix - remove contain/overflow that breaks fixed positioning on iOS */
+#left-sidebar.is-collapsed {
+  overflow: visible !important;
+  contain: none !important;
+}
+
 /* DEBUG: Bright backgrounds to see where elements are rendering */
 #left-sidebar.is-collapsed .sidebar-topbar {
   background-color: red !important;
