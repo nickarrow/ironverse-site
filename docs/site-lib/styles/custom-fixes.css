@@ -603,7 +603,8 @@ article.iron-vault-character section.assets > ul > li {
 }
 
 article.iron-vault-character section.assets > ul > li.asset-card-wrapper {
-  flex: 0 0 auto !important;
+  flex: 1 1 200px !important;
+  max-width: 290px !important;
 }
 
 /* Hide the collapse indicator arrows inside asset cards */
@@ -620,39 +621,9 @@ article.iron-vault-character section.assets .list-collapse-indicator {
   width: 100% !important;
 }
 
-/* Ensure the assets callout has enough width for side-by-side cards */
+/* Ensure the assets callout content uses full width */
 .callout[data-callout="assets"] .callout-content {
   width: 100% !important;
-  max-width: none !important;
-}
-
-/* Override any max-width on the markdown-preview-sizer for asset display */
-.callout[data-callout="assets"] .block-language-iron-vault-character-assets {
-  max-width: none !important;
-}
-
-/* Allow the assets callout to break out of line-width constraint */
-.el-div:has(.callout[data-callout="assets"]) {
-  max-width: none !important;
-  width: calc(100% + 4em) !important;
-  margin-left: -2em !important;
-  margin-right: -2em !important;
-}
-
-.callout[data-callout="assets"] {
-  max-width: none !important;
-}
-
-/* On wider screens, ensure cards display side by side */
-@media (min-width: 700px) {
-  .iron-vault-character section.assets > ul {
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-  }
-  
-  .iron-vault-character section.assets > ul > li.asset-card-wrapper {
-    flex: 0 0 auto !important;
-  }
 }
 
 /* Asset card wrapper positioning */
@@ -670,15 +641,15 @@ article.iron-vault-character section.assets .list-collapse-indicator {
   z-index: 1;
 }
 
-/* Asset card base styling - smaller width to fit side-by-side */
+/* Asset card base styling - sized to fit within line-width */
 .iron-vault-asset-card {
-  margin: auto;
+  margin: 0 !important;
   border: 2px solid var(--background-modifier-border);
   padding: 0;
   border-radius: 8px;
-  width: 280px !important;
-  min-width: 250px !important;
-  max-width: 300px !important;
+  width: 100% !important;
+  max-width: 290px !important;
+  min-width: 200px !important;
   background-color: var(--background-primary);
 }
 
