@@ -82,14 +82,8 @@ export function getFileByPath(filePath: string): { frontmatter: Record<string, a
 }
 
 function extractTitle(content: string, filename: string): string {
-  // Try to get title from first H1
-  const h1Match = content.match(/^#\s+(.+)$/m);
-  if (h1Match) {
-    // Remove wikilink syntax if present
-    return h1Match[1].replace(/\[\[([^\]]+)\]\]/g, '$1').trim();
-  }
-  
-  // Fall back to filename without extension
+  // Use filename without extension as the title
+  // This preserves numbering like "2. Getting Started" from filenames
   return filename.replace(/\.md$/, '');
 }
 

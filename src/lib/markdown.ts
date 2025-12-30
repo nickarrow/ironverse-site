@@ -4,6 +4,7 @@
 
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import rehypeRaw from 'rehype-raw';
@@ -87,6 +88,7 @@ export async function processMarkdown(content: string, allFiles: ContentFile[], 
   
   const result = await unified()
     .use(remarkParse)
+    .use(remarkGfm)
     .use(remarkIronVault, { allFiles, baseUrl })
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)

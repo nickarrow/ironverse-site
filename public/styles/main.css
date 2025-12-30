@@ -318,11 +318,15 @@ html, body {
   border-radius: 8px;
   overflow-x: auto;
   margin: 1rem 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .prose pre code {
   background: none;
   padding: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .prose img {
