@@ -32,7 +32,14 @@ jobs:
 
       - name: Clone content repo
         run: |
+          # Install Git LFS
+          git lfs install
+          # Clone with LFS files
           git clone https://github.com/nickarrow/the-foundry.git content
+          cd content
+          # Pull LFS files
+          git lfs pull
+          cd ..
           # Remove hidden folders we don't need
           rm -rf content/.git content/.github content/.foundry
 

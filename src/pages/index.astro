@@ -5,7 +5,7 @@ import { getAllContentFiles, getContentFile } from '../lib/content';
 import { processMarkdown } from '../lib/markdown';
 
 const allFiles = getAllContentFiles();
-const fileData = getContentFile('1.-welcome-to-the-foundry');
+const fileData = getContentFile('welcome-to-the-foundry');
 
 if (!fileData) {
   return Astro.redirect('/404');
