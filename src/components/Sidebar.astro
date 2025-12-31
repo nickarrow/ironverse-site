@@ -34,14 +34,16 @@ function renderNavNode(node: NavNode, base: string, currentPath: string, depth: 
   <div class="sidebar-header">
     <a href={base} class="site-title">The Foundry</a>
     <div class="sidebar-controls">
-      <button class="expand-all" title="Expand all" aria-label="Expand all folders">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="6 9 12 15 18 9"></polyline>
+      <button class="toggle-all-folders" title="Expand/Collapse all" aria-label="Toggle all folders">
+        <!-- Lucide chevrons-down-up (shown when collapsed - click to expand) -->
+        <svg class="icon-expand" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m7 20 5-5 5 5"/>
+          <path d="m7 4 5 5 5-5"/>
         </svg>
-      </button>
-      <button class="collapse-all" title="Collapse all" aria-label="Collapse all folders">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="18 15 12 9 6 15"></polyline>
+        <!-- Lucide chevrons-up-down (shown when expanded - click to collapse) -->
+        <svg class="icon-collapse" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+          <path d="m7 15 5 5 5-5"/>
+          <path d="m7 9 5-5 5 5"/>
         </svg>
       </button>
     </div>

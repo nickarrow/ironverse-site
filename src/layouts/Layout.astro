@@ -67,24 +67,44 @@ const { title } = Astro.props;
           title.addEventListener('click', () => {
             title.parentElement?.classList.toggle('collapsed');
             saveFolderStates();
+            updateToggleIcon();
           });
         });
         
-        // Expand all button
-        document.querySelector('.expand-all')?.addEventListener('click', () => {
-          document.querySelectorAll('.nav-folder').forEach(folder => {
-            folder.classList.remove('collapsed');
-          });
+        // Toggle all folders button (single button that switches icons)
+        const toggleBtn = document.querySelector('.toggle-all-folders');
+        const iconExpand = toggleBtn?.querySelector('.icon-expand') as HTMLElement;
+        const iconCollapse = toggleBtn?.querySelector('.icon-collapse') as HTMLElement;
+        
+        function updateToggleIcon() {
+          const allFolders = document.querySelectorAll('.nav-folder');
+          const allCollapsed = Array.from(allFolders).every(f => f.classList.contains('collapsed'));
+          
+          if (iconExpand && iconCollapse) {
+            // Show expand icon when all are collapsed, collapse icon when any are expanded
+            iconExpand.style.display = allCollapsed ? 'block' : 'none';
+            iconCollapse.style.display = allCollapsed ? 'none' : 'block';
+          }
+        }
+        
+        toggleBtn?.addEventListener('click', () => {
+          const allFolders = document.querySelectorAll('.nav-folder');
+          const allCollapsed = Array.from(allFolders).every(f => f.classList.contains('collapsed'));
+          
+          if (allCollapsed) {
+            // Expand all
+            allFolders.forEach(folder => folder.classList.remove('collapsed'));
+          } else {
+            // Collapse all
+            allFolders.forEach(folder => folder.classList.add('collapsed'));
+          }
+          
+          updateToggleIcon();
           saveFolderStates();
         });
         
-        // Collapse all button
-        document.querySelector('.collapse-all')?.addEventListener('click', () => {
-          document.querySelectorAll('.nav-folder').forEach(folder => {
-            folder.classList.add('collapsed');
-          });
-          saveFolderStates();
-        });
+        // Update icon on initial load
+        updateToggleIcon();
         
         // Auto-expand folders containing the active page
         const activeItem = document.querySelector('.nav-item.active');
