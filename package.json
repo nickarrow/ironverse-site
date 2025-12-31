@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^4.0.0",
+    "@datasworn/ironsworn-classic": "^0.0.10",
+    "@datasworn/starforged": "^0.1.0-0",
+    "@datasworn/sundered-isles": "^0.1.0-0",
     "astro": "^5.0.0",
     "gray-matter": "^4.0.3",
     "pagefind": "^1.0.0",

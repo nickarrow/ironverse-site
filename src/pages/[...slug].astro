@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import { getAllContentFiles, getContentFile } from '../lib/content';
 import { processMarkdown } from '../lib/markdown';
+import { getCharacterAssets, convertDataswornLinks, type CharacterAsset, type MergedAsset } from '../lib/datasworn-assets';
 
 export async function getStaticPaths() {
   const files = getAllContentFiles();
@@ -257,12 +258,132 @@ if (isCharacter) {
     characterImpactsHtml
   );
   
-  // Assets HTML (placeholder - would need asset data)
+  // Assets HTML - render full asset cards from Datasworn data
+  const characterAssetData: CharacterAsset[] = frontmatter.assets || [];
+  const mergedAssets = getCharacterAssets(characterAssetData);
+  
+  const renderAssetCard = (merged: MergedAsset): string => {
+    const { definition, state } = merged;
+    
+    // Get custom name from options if available
+    const customName = state.options?.name || '';
+    
+    // Render abilities with enabled state from character
+    const abilitiesHtml = definition.abilities.map((ability, index) => {
+      const isEnabled = state.abilities[index] || false;
+      const abilityText = convertDataswornLinks(ability.text);
+      return `
+        <li>
+          <label>
+            <input type="checkbox" ${isEnabled ? 'checked' : ''} disabled />
+            <span class="markdown-wrapper">${abilityText}</span>
+          </label>
+        </li>
+      `;
+    }).join('');
+    
+    // Render options (like custom name)
+    let optionsHtml = '';
+    if (definition.options && Object.keys(definition.options).length > 0) {
+      const optionItems = Object.entries(definition.options).map(([key, opt]) => {
+        const value = state.options?.[key] || '';
+        return `
+          <li>
+            <label>
+              <span>${opt.label?.toUpperCase() || key.toUpperCase()}</span>
+              <input type="text" value="${value}" readonly />
+            </label>
+          </li>
+        `;
+      }).join('');
+      optionsHtml = `<div class="options"><ul>${optionItems}</ul></div>`;
+    }
+    
+    // Render controls (like integrity, health, command)
+    let controlsHtml = '';
+    if (definition.controls && Object.keys(definition.controls).length > 0) {
+      const controlItems = Object.entries(definition.controls).map(([key, ctrl]) => {
+        // Skip nested controls (like battered/cursed which are under integrity)
+        if (key.includes('/')) return '';
+        
+        const currentValue = state.controls?.[key] ?? ctrl.value;
+        
+        if (ctrl.field_type === 'condition_meter') {
+          // Render as a meter with buttons
+          const max = ctrl.max || 5;
+          const min = ctrl.min || 0;
+          const meterItems = Array.from({ length: max - min + 1 }, (_, i) => {
+            const val = min + i;
+            const isSelected = val === currentValue;
+            return `<li${isSelected ? ' class="selected"' : ''}><label><span>${val}</span></label></li>`;
+          }).join('');
+          
+          // Check for nested impact controls (battered, cursed, etc.)
+          let impactControls = '';
+          if (ctrl.controls) {
+            const impactItems = Object.entries(ctrl.controls).map(([impactKey, impactCtrl]: [string, any]) => {
+              const impactValue = state.controls?.[`${key}/${impactKey}`] || false;
+              const label = impactCtrl.label || impactKey;
+              return `<span class="impact-control"><label><input type="checkbox" ${impactValue ? 'checked' : ''} disabled /><span>${label.toUpperCase()}</span></label></span>`;
+            }).join(' ');
+            impactControls = `<div class="meter-impacts">${impactItems}</div>`;
+          }
+          
+          return `
+            <li class="condition-meter">
+              ${impactControls}
+              <span class="meter-label">${ctrl.label?.toUpperCase() || key.toUpperCase()}</span>
+              <ul class="meter">${meterItems}</ul>
+            </li>
+          `;
+        } else if (ctrl.field_type === 'checkbox') {
+          const isChecked = state.controls?.[key] || false;
+          return `
+            <li>
+              <label>
+                <input type="checkbox" ${isChecked ? 'checked' : ''} disabled />
+                <span>${ctrl.label?.toUpperCase() || key.toUpperCase()}</span>
+              </label>
+            </li>
+          `;
+        }
+        return '';
+      }).filter(Boolean).join('');
+      
+      if (controlItems) {
+        controlsHtml = `<ul class="controls">${controlItems}</ul>`;
+      }
+    }
+    
+    const sourceTitle = definition._source?.title || 'Ironsworn';
+    
+    return `
+      <article class="iron-vault-asset-card">
+        <header>
+          <dl>
+            <dt>Category</dt>
+            <dd class="category">${definition.category}</dd>
+            <dt>Name</dt>
+            <dd class="name">${definition.name}</dd>
+          </dl>
+        </header>
+        ${optionsHtml}
+        <ul class="abilities">
+          ${abilitiesHtml}
+        </ul>
+        ${controlsHtml}
+        <footer>${sourceTitle}</footer>
+      </article>
+    `;
+  };
+  
+  const assetCardsHtml = mergedAssets.map(renderAssetCard).join('');
+  
   const characterAssetsHtml = `
     <section class="iron-vault-character assets">
-      <div class="assets-placeholder">
-        <em>Assets would be displayed here</em>
-      </div>
+      <ul>
+        ${assetCardsHtml ? assetCardsHtml : '<li><em>No assets</em></li>'}
+      </ul>
     </section>
   `;
   

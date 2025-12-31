@@ -3079,3 +3079,94 @@ table.iron-vault-oracle-table {
   padding: 0.4em;
   border-bottom: 1px solid var(--background-modifier-border);
 }
+
+/* ============================================
+   Asset Card Fixes for Static Site
+   ============================================ */
+
+/* Fix text input styling - dark background, light text */
+.iron-vault-asset-card .options input[type="text"] {
+  background-color: var(--background-secondary);
+  border: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+  font-size: 1.4em;
+}
+
+/* Asset cards grid layout - 2x2 on desktop, 1x1 on mobile */
+.iron-vault-character.assets > ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-items: start;
+  gap: 1em;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.iron-vault-character.assets > ul .iron-vault-asset-card {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .iron-vault-character.assets > ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Fix condition meter rendering - horizontal bar */
+.iron-vault-asset-card .controls .condition-meter {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.iron-vault-asset-card .controls .condition-meter .meter-label {
+  font-weight: var(--font-semibold);
+  margin-bottom: 0.3em;
+}
+
+.iron-vault-asset-card .controls .condition-meter ul.meter {
+  display: flex;
+  flex-flow: row nowrap;
+  list-style: none;
+  border: 1px solid var(--interactive-normal);
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.iron-vault-asset-card .controls .condition-meter ul.meter li {
+  flex: 1;
+  background-color: var(--interactive-normal);
+  border-right: 2px solid var(--background-primary);
+  text-align: center;
+  padding: 0.3em 0;
+}
+
+.iron-vault-asset-card .controls .condition-meter ul.meter li:last-child {
+  border-right: none;
+}
+
+.iron-vault-asset-card .controls .condition-meter ul.meter li.selected {
+  background-color: var(--interactive-accent);
+}
+
+.iron-vault-asset-card .controls .condition-meter ul.meter li label span {
+  font-weight: var(--font-bold);
+  color: var(--text-normal);
+}
+
+/* Impact controls (battered/cursed) styling */
+.iron-vault-asset-card .meter-impacts {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 0.5em;
+  margin-bottom: 0.3em;
+}
+
+.iron-vault-asset-card .meter-impacts .impact-control label {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 0.9em;
+}
