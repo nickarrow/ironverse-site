@@ -5,6 +5,7 @@
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import remarkRehype from 'remark-rehype';
 import rehypeStringify from 'rehype-stringify';
 import rehypeRaw from 'rehype-raw';
@@ -106,6 +107,7 @@ ${embeddedFile.content}
   const result = await unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkBreaks) // Treat single newlines as <br> like Obsidian does
     .use(remarkIronVault, { allFiles, baseUrl })
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
