@@ -108,13 +108,7 @@ function collectMarkdownFiles(dir, relativePath = '') {
 }
 
 function formatDate(date) {
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+  return date.toISOString().split('T')[0]; // YYYY-MM-DD
 }
 
 function generateChangelog() {
@@ -148,21 +142,27 @@ Lists the most recently modified files within The Foundry.
 
 *Last generated: ${formatDate(new Date())}*
 
-| File | Location | Author | Last Modified |
-|------|----------|--------|---------------|
+<div class="changelog-table">
+
+| File | Author | Last Modified |
+|------|--------|---------------|
 `;
   
   for (const file of topFiles) {
     // Create wiki-style link that our markdown processor understands
     const link = `[[${file.name}]]`;
-    const rawLocation = path.dirname(file.path);
-    const location = (!rawLocation || rawLocation === '.') ? 'Root' : rawLocation;
     const date = formatDate(file.lastModified);
     
-    markdown += `| ${link} | ${location} | ${file.author} | ${date} |\n`;
+    markdown += `| ${link} | ${file.author} | ${date} |\n`;
   }
   
-  markdown += `\n---\n\n*This changelog is automatically generated during the site build process based on git commit history.*\n`;
+  markdown += `
+</div>
+
+---
+
+*This changelog is automatically generated during the site build process based on git commit history.*
+`;
   
   // Write the changelog
   fs.writeFileSync(OUTPUT_FILE, markdown, 'utf-8');

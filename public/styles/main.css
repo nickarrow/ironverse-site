@@ -871,3 +871,9 @@ html, body {
 .sidebar-search .pagefind-ui__button:hover {
   background: var(--accent-hover) !important;
 }
+
+
+/* Changelog table - prevent date column from wrapping */
+.changelog-table td:last-child {
+  white-space: nowrap;
+}
