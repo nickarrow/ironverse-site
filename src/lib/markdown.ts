@@ -100,21 +100,8 @@ ${embeddedFile.content}
   });
   
   // Convert wikilinks [[Page Name]] or [[Page Name|Display Text]] to markdown links
-  processed = processed.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (match, target, display) => {
-    const displayText = display || target;
-    
-    // Try to find the file by name
-    const lookupKey = target.toLowerCase().trim();
-    const file = filesByName.get(lookupKey);
-    
-    if (file) {
-      return `[${displayText}](${baseUrl}/${file.slug})`;
-    }
-    
-    // Fallback: slugify the target directly
-    const slug = pathToSlug(target + '.md');
-    return `[${displayText}](${baseUrl}/${slug})`;
-  });
+  // BUT skip wikilinks inside code blocks (``` ... ```)
+  processed = convertWikilinksOutsideCodeBlocks(processed, filesByName, baseUrl);
   
   const result = await unified()
     .use(remarkParse)
@@ -126,6 +113,36 @@ ${embeddedFile.content}
     .process(processed);
   
   return String(result);
+}
+
+function convertWikilinksOutsideCodeBlocks(content: string, filesByName: Map<string, ContentFile>, baseUrl: string): string {
+  // Split content by code blocks, process only non-code parts
+  const codeBlockRegex = /(```[\s\S]*?```)/g;
+  const parts = content.split(codeBlockRegex);
+  
+  return parts.map((part, index) => {
+    // Odd indices are code blocks (captured groups)
+    if (part.startsWith('```')) {
+      return part; // Don't process code blocks
+    }
+    
+    // Convert wikilinks in non-code parts
+    return part.replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (match, target, display) => {
+      const displayText = display || target;
+      
+      // Try to find the file by name
+      const lookupKey = target.toLowerCase().trim();
+      const file = filesByName.get(lookupKey);
+      
+      if (file) {
+        return `[${displayText}](${baseUrl}/${file.slug})`;
+      }
+      
+      // Fallback: slugify the target directly
+      const slug = pathToSlug(target + '.md');
+      return `[${displayText}](${baseUrl}/${slug})`;
+    });
+  }).join('');
 }
 
 function processCallouts(content: string): string {
@@ -323,7 +340,7 @@ function remarkIronVault(options: { allFiles: ContentFile[]; baseUrl: string }) 
             node.value = renderDataviewResult(query, results, options.baseUrl);
           } else {
             node.type = 'html';
-            node.value = `<div class="dataview-error">Could not parse query</div>`;
+            node.value = `<div class="block-language-dataview"><div class="dataview-error-box"><p class="dataview-error-message">Dataview: Could not parse query</p></div></div>`;
           }
         }
       }

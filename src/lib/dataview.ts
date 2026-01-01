@@ -194,23 +194,29 @@ function matchesValue(actual: any, expected: string): boolean {
 }
 
 export function renderDataviewResult(query: DataviewQuery, results: ContentFile[], baseUrl: string = ''): string {
+  // Wrap everything in block-language-dataview for Obsidian-style styling
+  let content: string;
+  
   if (results.length === 0) {
-    return '<div class="dataview-empty">No results</div>';
+    // Match Obsidian's empty state styling
+    content = `<div class="dataview-error-box">
+<p class="dataview-error-message">Dataview: No results to show for ${query.type.toLowerCase()} query.</p>
+</div>`;
+  } else if (query.type === 'LIST') {
+    content = renderList(results, baseUrl);
+  } else {
+    content = renderTable(query, results, baseUrl);
   }
   
-  if (query.type === 'LIST') {
-    return renderList(results, baseUrl);
-  }
-  
-  return renderTable(query, results, baseUrl);
+  return `<div class="block-language-dataview">${content}</div>`;
 }
 
 function renderList(results: ContentFile[], baseUrl: string): string {
   const items = results.map(f => 
-    `<li><a href="${baseUrl}/${f.slug}">${escapeHtml(f.title)}</a></li>`
+    `<li class="dataview-result-list-li"><a href="${baseUrl}/${f.slug}">${escapeHtml(f.title)}</a></li>`
   ).join('');
   
-  return `<ul class="dataview-list">${items}</ul>`;
+  return `<ul class="dataview-result-list-root-ul">${items}</ul>`;
 }
 
 function renderTable(query: DataviewQuery, results: ContentFile[], baseUrl: string): string {
@@ -243,7 +249,7 @@ function renderTable(query: DataviewQuery, results: ContentFile[], baseUrl: stri
     return `<tr>${cells}</tr>`;
   }).join('');
   
-  return `<table class="dataview-table"><${header}<tbody>${rows}</tbody></table>`;
+  return `<table class="table-view-table">${header}<tbody>${rows}</tbody></table>`;
 }
 
 function formatValue(value: any, file: ContentFile, baseUrl: string): string {
