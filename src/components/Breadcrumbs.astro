@@ -1,5 +1,5 @@
 ---
-import { getAllContentFiles } from '../lib/content';
+import { getAllContentFiles, buildNavigationTree, type NavNode } from '../lib/content';
 
 interface Props {
   slug: string;
@@ -8,9 +8,25 @@ interface Props {
 const { slug } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
-// Get all valid page slugs
+// Get all valid page slugs and build a slug-to-name map
 const allFiles = getAllContentFiles();
 const validSlugs = new Set(allFiles.map(f => f.slug));
+
+// Build a map of slug -> display name from the navigation tree
+const navTree = buildNavigationTree();
+const slugToName = new Map<string, string>();
+
+function mapNavNodes(nodes: NavNode[]) {
+  for (const node of nodes) {
+    if (node.slug) {
+      slugToName.set(node.slug, node.name);
+    }
+    if (node.children.length > 0) {
+      mapNavNodes(node.children);
+    }
+  }
+}
+mapNavNodes(navTree);
 
 // Build breadcrumb trail from slug
 const parts = slug ? slug.split('/').filter(p => p) : [];
@@ -21,12 +37,17 @@ const crumbs: { name: string; href: string | null }[] = [
 let currentPath = '';
 for (const part of parts) {
   currentPath += (currentPath ? '/' : '') + part;
-  // Convert slug back to readable name
-  const name = part
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
-    .replace(/\d+\.\s*/, ''); // Remove leading numbers like "1. "
+  
+  // Look up the actual name from the nav tree, fall back to slug conversion
+  let name = slugToName.get(currentPath);
+  if (!name) {
+    // Fallback: convert slug back to readable name
+    name = part
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ')
+      .replace(/\d+\.\s*/, '');
+  }
   
   // Only make it a link if there's an actual page at this path
   const href = validSlugs.has(currentPath) ? `${base}/${currentPath}` : null;
@@ -60,6 +81,27 @@ for (const part of parts) {
     font-size: 0.85rem;
     margin-bottom: 1rem;
     color: var(--text-muted);
+    position: sticky;
+    top: 0;
+    background: var(--bg-primary);
+    padding: 0.5rem 0;
+    margin: -0.5rem 0 1rem 0;
+    z-index: 50;
+    backdrop-filter: blur(8px);
+    background: rgba(30, 30, 30, 0.9);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+  
+  .breadcrumbs.scrolled {
+    border-bottom-color: var(--border-color);
+  }
+  
+  /* Hide on mobile - MobileHeader handles breadcrumbs there */
+  @media (max-width: 768px) {
+    .breadcrumbs {
+      display: none;
+    }
   }
   
   ol {
@@ -99,3 +141,24 @@ for (const part of parts) {
     color: var(--text-primary);
   }
 </style>
+
+<script>
+  // Add scrolled class to breadcrumbs when page is scrolled
+  const breadcrumbs = document.querySelector('.breadcrumbs');
+  if (breadcrumbs) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        breadcrumbs.classList.toggle('scrolled', !entry.isIntersecting);
+      },
+      { threshold: 1, rootMargin: '-1px 0px 0px 0px' }
+    );
+    
+    // Create a sentinel element at the top of the content
+    const sentinel = document.createElement('div');
+    sentinel.style.height = '1px';
+    sentinel.style.position = 'absolute';
+    sentinel.style.top = '0';
+    breadcrumbs.parentElement?.insertBefore(sentinel, breadcrumbs);
+    observer.observe(sentinel);
+  }
+</script>

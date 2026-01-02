@@ -48,18 +48,15 @@ const { title } = Astro.props;
     <script>
       // Mobile sidebar toggle
       document.addEventListener('DOMContentLoaded', () => {
-        const toggle = document.querySelector('.sidebar-toggle');
+        const toggle = document.querySelector('.mobile-menu-toggle');
         const sidebar = document.querySelector('.sidebar');
-        
-        toggle?.addEventListener('click', () => {
-          sidebar?.classList.toggle('open');
-        });
         
         // Close sidebar when clicking outside on mobile
         document.addEventListener('click', (e) => {
           if (window.innerWidth <= 768) {
             const target = e.target as HTMLElement;
-            if (!sidebar?.contains(target) && !toggle?.contains(target)) {
+            const mobileHeader = document.querySelector('.mobile-header');
+            if (!sidebar?.contains(target) && !mobileHeader?.contains(target)) {
               sidebar?.classList.remove('open');
             }
           }

@@ -51,6 +51,31 @@ html, body {
   min-height: 100vh;
 }
 
+/* Mobile header - sits above the flex layout on mobile */
+.mobile-header {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app {
+    flex-direction: column;
+  }
+  
+  .mobile-header {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+  }
+}
+
 /* Sidebar */
 .sidebar {
   width: var(--sidebar-width);
@@ -221,26 +246,16 @@ html, body {
   display: none;
 }
 
-/* Mobile sidebar toggle */
+/* Mobile sidebar toggle - hidden, using MobileHeader instead */
 .sidebar-toggle {
   display: none;
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
-  z-index: 200;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.5rem;
-  color: var(--text-primary);
-  cursor: pointer;
 }
 
 /* Main content */
 .content {
   flex: 1;
   margin-left: var(--sidebar-width);
-  padding: 2rem;
+  padding: 1rem 2rem 2rem 2rem;
   max-width: calc(var(--content-max-width) + var(--sidebar-width) + 4rem);
 }
 
@@ -542,14 +557,9 @@ html, body {
     transform: translateX(0);
   }
   
-  .sidebar-toggle {
-    display: block;
-  }
-  
   .content {
     margin-left: 0;
     padding: 1rem;
-    padding-top: 4rem;
   }
 }
 
