@@ -6,7 +6,7 @@ import { getAllContentFiles, getContentFile } from '../lib/content';
 import { processMarkdown } from '../lib/markdown';
 
 const allFiles = getAllContentFiles();
-const fileData = getContentFile('welcome-to-the-ironverse');
+const fileData = getContentFile('welcome-to-ironverse');
 
 if (!fileData) {
   return Astro.redirect('/404');
