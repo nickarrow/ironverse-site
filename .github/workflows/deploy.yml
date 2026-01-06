@@ -35,13 +35,13 @@ jobs:
           # Install Git LFS
           git lfs install
           # Clone with full history for changelog generation (no shallow clone)
-          git clone https://github.com/nickarrow/the-foundry.git content
+          git clone https://github.com/nickarrow/ironverse.git content
           cd content
           # Pull LFS files
           git lfs pull
           cd ..
           # Remove hidden folders we don't need (but keep .git for changelog)
-          rm -rf content/.github content/.foundry
+          rm -rf content/.github content/.ironverse
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

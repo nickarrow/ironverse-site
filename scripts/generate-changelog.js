@@ -8,7 +8,7 @@ import path from 'node:path';
 import { execSync } from 'node:child_process';
 
 const CONTENT_DIR = 'content';
-const OUTPUT_FILE = 'content/The Foundry Changelog.md';
+const OUTPUT_FILE = 'content/Ironverse Changelog.md';
 const MAX_ENTRIES = 50; // Limit changelog entries
 
 // Files/patterns to exclude from changelog
@@ -17,7 +17,7 @@ const EXCLUDED_PATTERNS = [
   /\.excalidraw\.md$/, // Excalidraw files
   /\.base$/, // Base files
   /^README\.md$/, // Root README
-  /The Foundry Changelog/, // The changelog itself
+  /Ironverse Changelog/, // The changelog itself
 ];
 
 function shouldExclude(filePath) {
@@ -139,9 +139,9 @@ function generateChangelog() {
   const topFiles = filesWithDates.slice(0, MAX_ENTRIES);
 
   // Generate markdown content
-  let markdown = `# The Foundry Changelog
+  let markdown = `# Ironverse Changelog
 
-Lists the most recently modified files within The Foundry.
+Lists the most recently modified files within Ironverse.
 
 *Last generated: ${formatDate(new Date())}*
 

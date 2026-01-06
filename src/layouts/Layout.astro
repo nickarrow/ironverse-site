@@ -13,7 +13,7 @@ const { title } = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{title} | The Foundry</title>
+    <title>{title} | Ironverse</title>
     <link rel="icon" type="image/png" href={`${import.meta.env.BASE_URL}/favicon.png`} />
     <link rel="stylesheet" href={`${import.meta.env.BASE_URL}/styles/main.css`} />
     <link rel="stylesheet" href={`${import.meta.env.BASE_URL}/styles/iron-vault.css`} />
@@ -30,7 +30,7 @@ const { title } = Astro.props;
         if (document.querySelector('.pagefind-ui')) return; // Already initialized
         
         const script = document.createElement('script');
-        script.src = '/the-foundry-site/pagefind/pagefind-ui.js';
+        script.src = '/ironverse-site/pagefind/pagefind-ui.js';
         script.onload = function () {
           new PagefindUI({
             element: '#search-container',

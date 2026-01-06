@@ -1,12 +1,12 @@
-# The Foundry Site
+# Ironverse Site
 
-A static website that publishes [The Foundry](https://github.com/nickarrow/the-foundry) — a collaborative Obsidian vault for Ironsworn/Starforged tabletop RPG players — as a read-only web experience.
+A static website that publishes [Ironverse](https://github.com/nickarrow/ironverse) — a collaborative Obsidian vault for Ironsworn/Starforged tabletop RPG players — as a read-only web experience.
 
-**Live Site:** [nickarrow.github.io/the-foundry-site](https://nickarrow.github.io/the-foundry-site/)
+**Live Site:** [nickarrow.github.io/ironverse-site](https://nickarrow.github.io/ironverse-site/)
 
 ## What This Does
 
-The Foundry vault uses [Iron Vault](https://github.com/iron-vault-plugin/iron-vault), an Obsidian plugin for tracking game mechanics. This site transforms all that Obsidian-specific content into pure static HTML:
+The Ironverse vault uses [Iron Vault](https://github.com/iron-vault-plugin/iron-vault), an Obsidian plugin for tracking game mechanics. This site transforms all that Obsidian-specific content into pure static HTML:
 
 - **Wikilinks** (`[[Page Name]]`) → working site links
 - **Image embeds** (`![[image.png]]`) → rendered images with size/alignment options
@@ -44,7 +44,7 @@ The result is a "read-only Obsidian" where visitors can browse campaigns, read j
 npm install
 
 # Clone the content repository
-git clone https://github.com/nickarrow/the-foundry.git content
+git clone https://github.com/nickarrow/ironverse.git content
 
 # Build the site
 npm run build
@@ -73,8 +73,8 @@ The build process:
 The site deploys automatically via GitHub Actions:
 
 - **Trigger**: Every 15 minutes, manual dispatch, or push to `main`
-- **Process**: Clones the-foundry repo → builds site → deploys to GitHub Pages
-- **URL**: `https://nickarrow.github.io/the-foundry-site/`
+- **Process**: Clones ironverse repo → builds site → deploys to GitHub Pages
+- **URL**: `https://nickarrow.github.io/ironverse-site/`
 
 See [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) for details.
 
@@ -189,4 +189,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 ## License
 
-This project is for publishing The Foundry vault content. The vault itself follows the licensing in [The Foundry repository](https://github.com/nickarrow/the-foundry).
+This project is for publishing the Ironverse vault content. The vault itself follows the licensing in [the Ironverse repository](https://github.com/nickarrow/ironverse).

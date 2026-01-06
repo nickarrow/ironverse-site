@@ -1,21 +1,21 @@
-# Contributing to The Foundry Site
+# Contributing to Ironverse Site
 
 This guide covers contributing to the site generator itself — the Astro project that transforms Obsidian vault content into a static website.
 
-> **Adding campaign content?** That happens in [The Foundry](https://github.com/nickarrow/the-foundry) repository, not here.
+> **Adding campaign content?** That happens in [Ironverse](https://github.com/nickarrow/ironverse) repository, not here.
 
 ## Development Setup
 
 ```bash
 # Clone this repo
-git clone https://github.com/nickarrow/the-foundry-site.git
-cd the-foundry-site
+git clone https://github.com/nickarrow/ironverse-site.git
+cd ironverse-site
 
 # Install dependencies
 npm install
 
 # Clone content for local development
-git clone https://github.com/nickarrow/the-foundry.git content
+git clone https://github.com/nickarrow/ironverse.git content
 
 # Build and preview
 npm run build
@@ -49,7 +49,7 @@ npm run preview
 
 | Page | Purpose |
 |------|---------|
-| `index.astro` | Homepage (renders "Welcome to The Foundry") |
+| `index.astro` | Homepage (renders "Welcome to The Ironverse") |
 | `[...slug].astro` | Dynamic catch-all route for all content pages |
 | `404.astro` | Not found page |
 

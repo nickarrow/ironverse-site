@@ -4,7 +4,7 @@ import remarkBreaks from 'remark-breaks';
 
 export default defineConfig({
   site: 'https://nickarrow.github.io',
-  base: '/the-foundry-site',
+  base: '/ironverse-site',
   integrations: [mdx()],
   markdown: {
     syntaxHighlight: false, // We handle code blocks ourselves for iron-vault
