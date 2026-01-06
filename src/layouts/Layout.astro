@@ -30,7 +30,7 @@ const { title } = Astro.props;
         if (document.querySelector('.pagefind-ui')) return; // Already initialized
         
         const script = document.createElement('script');
-        script.src = '/ironverse-site/pagefind/pagefind-ui.js';
+        script.src = '/pagefind/pagefind-ui.js';
         script.onload = function () {
           new PagefindUI({
             element: '#search-container',
