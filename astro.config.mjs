@@ -3,8 +3,8 @@ import mdx from '@astrojs/mdx';
 import remarkBreaks from 'remark-breaks';
 
 export default defineConfig({
-  site: 'https://nickarrow.github.io',
-  base: '/ironverse-site',
+  site: 'https://ironverse.quest',
+  // base: '/ironverse-site', // No longer needed with custom domain
   integrations: [mdx()],
   markdown: {
     syntaxHighlight: false, // We handle code blocks ourselves for iron-vault
