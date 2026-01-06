@@ -22,8 +22,7 @@ import { getFileContentByName } from './content';
 
 export async function processMarkdown(
   content: string,
-  allFiles: ContentFile[],
-  baseUrl: string = ''
+  allFiles: ContentFile[]
 ): Promise<string> {
   // Normalize line endings first (Windows CRLF to LF)
   let processed = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
@@ -52,7 +51,7 @@ export async function processMarkdown(
     /!\[\[([^\]|]+\.(?:png|jpg|jpeg|gif|svg|webp))(?:\|([^\]]+))?\]\]/gi,
     (match, filename, options) => {
       // Find the image in attachments
-      const src = findImagePath(filename, baseUrl);
+      const src = findImagePath(filename);
       const alt = filename.replace(/\.[^.]+$/, '');
 
       if (options) {
@@ -85,7 +84,7 @@ export async function processMarkdown(
     if (embeddedFiles.has(lookupKey)) {
       const file = filesByName.get(lookupKey);
       const slug = file ? file.slug : pathToSlug(target + '.md');
-      return `<div class="embed-link"><a href="${baseUrl}/${slug}">${display || target}</a></div>`;
+      return `<div class="embed-link"><a href="/${slug}">${display || target}</a></div>`;
     }
 
     const embeddedFile = getFileContentByName(target);
@@ -97,7 +96,7 @@ export async function processMarkdown(
       // Return the embedded content wrapped in a styled container
       // The content will be processed by the markdown pipeline
       return `<div class="embedded-content">
-<div class="embedded-header"><a href="${baseUrl}/${slug}">${display || embeddedFile.title}</a></div>
+<div class="embedded-header"><a href="/${slug}">${display || embeddedFile.title}</a></div>
 <div class="embedded-body">
 
 ${embeddedFile.content}
@@ -109,18 +108,18 @@ ${embeddedFile.content}
     // Fallback to link if file not found
     const file = filesByName.get(lookupKey);
     const slug = file ? file.slug : pathToSlug(target + '.md');
-    return `<div class="embed-link"><a href="${baseUrl}/${slug}">${display || target}</a></div>`;
+    return `<div class="embed-link"><a href="/${slug}">${display || target}</a></div>`;
   });
 
   // Convert wikilinks [[Page Name]] or [[Page Name|Display Text]] to markdown links
   // BUT skip wikilinks inside code blocks (``` ... ```)
-  processed = convertWikilinksOutsideCodeBlocks(processed, filesByName, baseUrl);
+  processed = convertWikilinksOutsideCodeBlocks(processed, filesByName);
 
   const result = await unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkBreaks) // Treat single newlines as <br> like Obsidian does
-    .use(remarkIronVault, { allFiles, baseUrl })
+    .use(remarkIronVault, { allFiles })
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
     .use(rehypeStringify)
@@ -131,8 +130,7 @@ ${embeddedFile.content}
 
 function convertWikilinksOutsideCodeBlocks(
   content: string,
-  filesByName: Map<string, ContentFile>,
-  baseUrl: string
+  filesByName: Map<string, ContentFile>
 ): string {
   // Split content by code blocks, process only non-code parts
   const codeBlockRegex = /(```[\s\S]*?```)/g;
@@ -154,12 +152,12 @@ function convertWikilinksOutsideCodeBlocks(
         const file = filesByName.get(lookupKey);
 
         if (file) {
-          return `[${displayText}](${baseUrl}/${file.slug})`;
+          return `[${displayText}](/${file.slug})`;
         }
 
         // Fallback: slugify the target directly
         const slug = pathToSlug(target + '.md');
-        return `[${displayText}](${baseUrl}/${slug})`;
+        return `[${displayText}](/${slug})`;
       });
     })
     .join('');
@@ -306,14 +304,14 @@ function getCalloutIconSvg(type: string): string {
   return icons[type] || defaultIcon;
 }
 
-function findImagePath(filename: string, baseUrl: string): string {
+function findImagePath(filename: string): string {
   // Normalize filename: lowercase and replace spaces with hyphens
   const normalizedName = filename.toLowerCase().replace(/\s+/g, '-');
-  return `${baseUrl}/attachments/${normalizedName}`;
+  return `/attachments/${normalizedName}`;
 }
 
 // Custom remark plugin for Iron Vault syntax
-function remarkIronVault(options: { allFiles: ContentFile[]; baseUrl: string }) {
+function remarkIronVault(options: { allFiles: ContentFile[] }) {
   // Build a lookup map for file resolution
   const filesByName = new Map<string, ContentFile>();
   for (const file of options.allFiles) {
@@ -334,7 +332,7 @@ function remarkIronVault(options: { allFiles: ContentFile[]; baseUrl: string }) 
       ) => {
         // Handle inline code with iv-* prefix
         if (node.type === 'inlineCode' && node.value.startsWith('iv-')) {
-          const html = parseInlineMechanic(node.value, options.baseUrl, filesByName);
+          const html = parseInlineMechanic(node.value, filesByName);
           if (html) {
             node.type = 'html';
             node.value = html;
@@ -350,7 +348,7 @@ function remarkIronVault(options: { allFiles: ContentFile[]; baseUrl: string }) 
 
           if (node.lang === 'iron-vault-mechanics') {
             node.type = 'html';
-            node.value = parseIronVaultBlock(node.value, options.baseUrl);
+            node.value = parseIronVaultBlock(node.value);
           } else if (node.lang === 'iron-vault-track') {
             // This is rendered by the page component using frontmatter
             node.type = 'html';
@@ -379,7 +377,7 @@ function remarkIronVault(options: { allFiles: ContentFile[]; baseUrl: string }) 
             if (query) {
               const results = executeDataviewQuery(query, options.allFiles);
               node.type = 'html';
-              node.value = renderDataviewResult(query, results, options.baseUrl);
+              node.value = renderDataviewResult(query, results);
             } else {
               node.type = 'html';
               node.value = `<div class="block-language-dataview"><div class="dataview-error-box"><p class="dataview-error-message">Dataview: Could not parse query</p></div></div>`;

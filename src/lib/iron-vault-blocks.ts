@@ -3,7 +3,7 @@
  * Parses ```iron-vault-mechanics blocks and generates HTML
  */
 
-export function parseIronVaultBlock(content: string, baseUrl: string = ''): string {
+export function parseIronVaultBlock(content: string): string {
   const lines = content.trim().split('\n');
   const results: string[] = [];
 
@@ -34,7 +34,7 @@ export function parseIronVaultBlock(content: string, baseUrl: string = ''): stri
     } else if (line.startsWith('oracle ')) {
       results.push(parseOracleBlock(line));
     } else if (line.startsWith('track ')) {
-      results.push(parseTrackBlock(line, baseUrl));
+      results.push(parseTrackBlock(line));
     }
 
     i++;
@@ -139,7 +139,7 @@ function parseOracleGroupBlock(content: string): string {
   </div>`;
 }
 
-function parseTrackBlock(line: string, baseUrl: string): string {
+function parseTrackBlock(line: string): string {
   // track name="[[path|display]]" status="added"
   const nameMatch = line.match(/name="\[\[([^|]+)\|([^\]]+)\]\]"/);
   const statusMatch = line.match(/status="([^"]+)"/);
@@ -151,7 +151,7 @@ function parseTrackBlock(line: string, baseUrl: string): string {
 
   return `<dl class="track-status">
     <dt>Track</dt>
-    <dd class="track-name"><a href="${baseUrl}/${slug}">${escapeHtml(displayName)}</a></dd>
+    <dd class="track-name"><a href="${slug}">${escapeHtml(displayName)}</a></dd>
     <dd class="track-status" data-value="${status}">${status}</dd>
   </dl>`;
 }

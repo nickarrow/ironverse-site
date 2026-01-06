@@ -6,7 +6,6 @@ interface Props {
 }
 
 const { slug } = Astro.props;
-const base = import.meta.env.BASE_URL;
 
 // Get all valid page slugs and build a slug-to-name map
 const allFiles = getAllContentFiles();
@@ -30,7 +29,7 @@ mapNavNodes(navTree);
 
 // Build breadcrumb trail from slug
 const parts = slug ? slug.split('/').filter((p) => p) : [];
-const fullCrumbs: { name: string; href: string | null }[] = [{ name: 'Home', href: base }];
+const fullCrumbs: { name: string; href: string | null }[] = [{ name: 'Home', href: '/' }];
 
 let currentPath = '';
 for (const part of parts) {
@@ -45,7 +44,7 @@ for (const part of parts) {
       .replace(/\d+\.\s*/, '');
   }
 
-  const href = validSlugs.has(currentPath) ? `${base}/${currentPath}` : null;
+  const href = validSlugs.has(currentPath) ? `/${currentPath}` : null;
   fullCrumbs.push({ name, href });
 }
 

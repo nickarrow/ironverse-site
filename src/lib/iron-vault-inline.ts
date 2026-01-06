@@ -12,7 +12,6 @@ interface FileInfo {
 
 export function parseInlineMechanic(
   code: string,
-  baseUrl: string = '',
   filesByName?: Map<string, FileInfo>
 ): string | null {
   if (!code.startsWith('iv-')) return null;
@@ -33,15 +32,15 @@ export function parseInlineMechanic(
     case 'iv-initiative':
       return renderInitiative(content);
     case 'iv-track-create':
-      return renderTrackCreate(content, baseUrl, filesByName);
+      return renderTrackCreate(content, filesByName);
     case 'iv-track-advance':
-      return renderTrackAdvance(content, baseUrl, filesByName);
+      return renderTrackAdvance(content, filesByName);
     case 'iv-progress':
-      return renderProgressRoll(content, baseUrl, filesByName);
+      return renderProgressRoll(content, filesByName);
     case 'iv-noroll':
       return renderNoRoll(content);
     case 'iv-entity-create':
-      return renderEntityCreate(content, baseUrl, filesByName);
+      return renderEntityCreate(content, filesByName);
     default:
       return null;
   }
@@ -148,7 +147,6 @@ const ICON_FILE_PLUS = `<svg xmlns="http://www.w3.org/2000/svg" width="24" heigh
 
 function renderTrackCreate(
   content: string,
-  baseUrl: string,
   filesByName?: Map<string, FileInfo>
 ): string {
   // Format: Name|path
@@ -160,14 +158,13 @@ function renderTrackCreate(
   return (
     `<span class="iv-inline-mechanics track-create">` +
     `<span class="iv-inline-track-icon">${ICON_SQUARE_STACK}</span>` +
-    `<a href="${baseUrl}/${slug}" class="iv-inline-track-name iv-inline-link">${escapeHtml(name)}</a>` +
+    `<a href="/${slug}" class="iv-inline-track-name iv-inline-link">${escapeHtml(name)}</a>` +
     `</span>`
   );
 }
 
 function renderTrackAdvance(
   content: string,
-  baseUrl: string,
   filesByName?: Map<string, FileInfo>
 ): string {
   // Format: Name|path|from|to|rank|steps
@@ -183,7 +180,7 @@ function renderTrackAdvance(
   return (
     `<span class="iv-inline-mechanics track-advance">` +
     `<span class="iv-inline-track-icon">${ICON_COPY_CHECK}</span>` +
-    `<a href="${baseUrl}/${slug}" class="iv-inline-track-name iv-inline-link">${escapeHtml(name)}</a>` +
+    `<a href="/${slug}" class="iv-inline-track-name iv-inline-link">${escapeHtml(name)}</a>` +
     `<span class="iv-inline-track-progress"> +${steps} (${boxes}/10)</span>` +
     `</span>`
   );
@@ -191,7 +188,6 @@ function renderTrackAdvance(
 
 function renderProgressRoll(
   content: string,
-  _baseUrl: string,
   _filesByName?: Map<string, FileInfo>
 ): string {
   // Format: Name|progress|vs1|vs2|path
@@ -235,7 +231,6 @@ function renderNoRoll(content: string): string {
 
 function renderEntityCreate(
   content: string,
-  baseUrl: string,
   filesByName?: Map<string, FileInfo>
 ): string {
   // Format: Type|Name|path
@@ -249,7 +244,7 @@ function renderEntityCreate(
     `<span class="iv-inline-mechanics entity-create">` +
     `<span class="iv-inline-entity-icon">${ICON_FILE_PLUS}</span>` +
     `<span class="iv-inline-entity-type">${escapeHtml(type)}:</span>` +
-    `<a href="${baseUrl}/${slug}" class="iv-inline-entity-name iv-inline-link">${escapeHtml(name)}</a>` +
+    `<a href="/${slug}" class="iv-inline-entity-name iv-inline-link">${escapeHtml(name)}</a>` +
     `</span>`
   );
 }

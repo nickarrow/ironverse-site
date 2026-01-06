@@ -3,21 +3,19 @@ import { buildNavigationTree, type NavNode } from '../lib/content';
 
 const navTree = buildNavigationTree();
 const currentPath = Astro.url.pathname;
-const base = import.meta.env.BASE_URL;
 
 function renderNavNode(
   node: NavNode,
-  base: string,
   currentPath: string,
   depth: number = 0
 ): string {
-  const href = `${base}/${node.slug}`;
+  const href = `/${node.slug}`;
   const isActive = currentPath === href || currentPath === `${href}/`;
   const hasChildren = node.children.length > 0;
 
   if (hasChildren) {
     const childrenHtml = node.children
-      .map((child) => renderNavNode(child, base, currentPath, depth + 1))
+      .map((child) => renderNavNode(child, currentPath, depth + 1))
       .join('');
     return `
       <div class="nav-folder collapsed">
@@ -39,7 +37,7 @@ function renderNavNode(
 
 <aside class="sidebar" transition:persist transition:persist-props>
   <div class="sidebar-header">
-    <a href={base} class="site-title">Ironverse</a>
+    <a href="/" class="site-title">Ironverse</a>
     <div class="sidebar-controls">
       <button
         class="toggle-all-folders"
@@ -93,7 +91,7 @@ function renderNavNode(
   </div>
 
   <nav class="sidebar-nav">
-    {navTree.map((node) => <Fragment set:html={renderNavNode(node, base, currentPath)} />)}
+    {navTree.map((node) => <Fragment set:html={renderNavNode(node, currentPath)} />)}
   </nav>
 </aside>
 

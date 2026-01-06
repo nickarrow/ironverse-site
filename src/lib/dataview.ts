@@ -213,8 +213,7 @@ function matchesValue(actual: unknown, expected: string): boolean {
 
 export function renderDataviewResult(
   query: DataviewQuery,
-  results: ContentFile[],
-  baseUrl: string = ''
+  results: ContentFile[]
 ): string {
   // Wrap everything in block-language-dataview for Obsidian-style styling
   let content: string;
@@ -225,26 +224,26 @@ export function renderDataviewResult(
 <p class="dataview-error-message">Dataview: No results to show for ${query.type.toLowerCase()} query.</p>
 </div>`;
   } else if (query.type === 'LIST') {
-    content = renderList(results, baseUrl);
+    content = renderList(results);
   } else {
-    content = renderTable(query, results, baseUrl);
+    content = renderTable(query, results);
   }
 
   return `<div class="block-language-dataview">${content}</div>`;
 }
 
-function renderList(results: ContentFile[], baseUrl: string): string {
+function renderList(results: ContentFile[]): string {
   const items = results
     .map(
       (f) =>
-        `<li class="dataview-result-list-li"><a href="${baseUrl}/${f.slug}">${escapeHtml(f.title)}</a></li>`
+        `<li class="dataview-result-list-li"><a href="/${f.slug}">${escapeHtml(f.title)}</a></li>`
     )
     .join('');
 
   return `<ul class="dataview-result-list-root-ul">${items}</ul>`;
 }
 
-function renderTable(query: DataviewQuery, results: ContentFile[], baseUrl: string): string {
+function renderTable(query: DataviewQuery, results: ContentFile[]): string {
   // Parse field labels
   const columns = query.fields.map((f) => {
     const asMatch = f.match(/(.+)\s+as\s+"([^"]+)"/i);
@@ -264,10 +263,10 @@ function renderTable(query: DataviewQuery, results: ContentFile[], baseUrl: stri
           let value: string;
 
           if (c.field === 'file.link') {
-            value = `<a href="${baseUrl}/${file.slug}">${escapeHtml(file.title)}</a>`;
+            value = `<a href="/${file.slug}">${escapeHtml(file.title)}</a>`;
           } else {
             const rawValue = file.frontmatter[c.field];
-            value = formatValue(rawValue, file, baseUrl);
+            value = formatValue(rawValue);
           }
 
           return `<td>${value}</td>`;
@@ -281,7 +280,7 @@ function renderTable(query: DataviewQuery, results: ContentFile[], baseUrl: stri
   return `<table class="table-view-table">${header}<tbody>${rows}</tbody></table>`;
 }
 
-function formatValue(value: unknown, file: ContentFile, baseUrl: string): string {
+function formatValue(value: unknown): string {
   if (value === undefined || value === null) return '';
 
   // Handle wikilinks
@@ -292,7 +291,7 @@ function formatValue(value: unknown, file: ContentFile, baseUrl: string): string
   }
 
   if (Array.isArray(value)) {
-    return value.map((v) => formatValue(v, file, baseUrl)).join(', ');
+    return value.map((v) => formatValue(v)).join(', ');
   }
 
   return escapeHtml(String(value));

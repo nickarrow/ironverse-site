@@ -6,7 +6,6 @@ interface Props {
 }
 
 const { slug } = Astro.props;
-const base = import.meta.env.BASE_URL;
 
 // Get all valid page slugs and build a slug-to-name map
 const allFiles = getAllContentFiles();
@@ -30,7 +29,7 @@ mapNavNodes(navTree);
 
 // Build breadcrumb trail from slug
 const parts = slug ? slug.split('/').filter((p) => p) : [];
-const crumbs: { name: string; href: string | null }[] = [{ name: 'Home', href: base }];
+const crumbs: { name: string; href: string | null }[] = [{ name: 'Home', href: '/' }];
 
 let currentPath = '';
 for (const part of parts) {
@@ -48,7 +47,7 @@ for (const part of parts) {
   }
 
   // Only make it a link if there's an actual page at this path
-  const href = validSlugs.has(currentPath) ? `${base}/${currentPath}` : null;
+  const href = validSlugs.has(currentPath) ? `/${currentPath}` : null;
   crumbs.push({ name, href });
 }
 ---

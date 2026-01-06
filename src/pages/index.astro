@@ -13,8 +13,7 @@ if (!fileData) {
 }
 
 const { content, title } = fileData;
-const baseUrl = import.meta.env.BASE_URL;
-const htmlContent = await processMarkdown(content, allFiles, baseUrl);
+const htmlContent = await processMarkdown(content, allFiles);
 ---
 
 <Layout title={title}>
