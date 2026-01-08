@@ -8,9 +8,26 @@ import path from 'node:path';
 const CONTENT_DIR = 'content';
 const OUTPUT_DIR = 'public/attachments';
 
+// Image file extensions to copy
+const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp'];
+
 // Ensure output directory exists
 if (!fs.existsSync(OUTPUT_DIR)) {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+}
+
+function isImageFile(filename) {
+  const ext = path.extname(filename).toLowerCase();
+  return IMAGE_EXTENSIONS.includes(ext);
+}
+
+function copyFile(srcPath, filename) {
+  // Normalize filename: lowercase and replace spaces with hyphens
+  const normalizedName = filename.toLowerCase().replace(/\s+/g, '-');
+  const destPath = path.join(OUTPUT_DIR, normalizedName);
+
+  fs.copyFileSync(srcPath, destPath);
+  console.log(`Copied: ${srcPath} -> ${destPath}`);
 }
 
 function copyAttachments(dir) {
@@ -25,19 +42,17 @@ function copyAttachments(dir) {
         const attachments = fs.readdirSync(fullPath);
         for (const file of attachments) {
           const srcPath = path.join(fullPath, file);
-          // Normalize filename: lowercase and replace spaces with hyphens
-          const normalizedName = file.toLowerCase().replace(/\s+/g, '-');
-          const destPath = path.join(OUTPUT_DIR, normalizedName);
-
           if (fs.statSync(srcPath).isFile()) {
-            fs.copyFileSync(srcPath, destPath);
-            console.log(`Copied: ${srcPath} -> ${destPath}`);
+            copyFile(srcPath, file);
           }
         }
       } else if (!entry.name.startsWith('.')) {
         // Recurse into subdirectories
         copyAttachments(fullPath);
       }
+    } else if (entry.isFile() && isImageFile(entry.name)) {
+      // Copy image files found anywhere in content directory
+      copyFile(fullPath, entry.name);
     }
   }
 }
