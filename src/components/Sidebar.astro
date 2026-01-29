@@ -4,11 +4,7 @@ import { buildNavigationTree, type NavNode } from '../lib/content';
 const navTree = buildNavigationTree();
 const currentPath = Astro.url.pathname;
 
-function renderNavNode(
-  node: NavNode,
-  currentPath: string,
-  depth: number = 0
-): string {
+function renderNavNode(node: NavNode, currentPath: string, depth: number = 0): string {
   const href = `/${node.slug}`;
   const isActive = currentPath === href || currentPath === `${href}/`;
   const hasChildren = node.children.length > 0;

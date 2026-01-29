@@ -62,9 +62,11 @@ export function parseDataviewQuery(query: string): DataviewQuery | null {
     } else if (upperLine.startsWith('LIST')) {
       result.type = 'LIST';
     } else if (upperLine.startsWith('FROM')) {
-      // FROM #tag or FROM "folder"
+      // FROM #tag or FROM "folder" or FROM "folder1" OR "folder2"
       const fromStr = line.substring('FROM'.length).trim();
-      result.from = [fromStr];
+      // Split by OR (case insensitive) and handle each part
+      const parts = fromStr.split(/\s+OR\s+/i);
+      result.from = parts.map((p) => p.trim());
     } else if (upperLine.startsWith('WHERE')) {
       const whereClause = parseWhereClause(line.substring('WHERE'.length).trim());
       if (whereClause) result.where.push(whereClause);
@@ -121,26 +123,27 @@ function parseSortClause(str: string): SortClause | null {
 export function executeDataviewQuery(query: DataviewQuery, files: ContentFile[]): ContentFile[] {
   let results = [...files];
 
-  // Filter by FROM (tags or folder paths)
-  for (const from of query.from) {
-    if (from.startsWith('#')) {
-      // Tag filter: FROM #incomplete
-      const tag = from.substring(1);
-      results = results.filter((f) => {
-        const tags = f.frontmatter.tags || [];
-        return Array.isArray(tags) ? tags.includes(tag) : tags === tag;
+  // Filter by FROM (tags or folder paths) - OR logic between multiple FROM clauses
+  if (query.from.length > 0) {
+    results = results.filter((f) => {
+      // File matches if it matches ANY of the FROM clauses (OR logic)
+      return query.from.some((from) => {
+        if (from.startsWith('#')) {
+          // Tag filter: FROM #incomplete
+          const tag = from.substring(1);
+          const tags = f.frontmatter.tags || [];
+          return Array.isArray(tags) ? tags.includes(tag) : tags === tag;
+        } else {
+          // Folder path filter: FROM "folder/path" or FROM folder/path
+          // Remove surrounding quotes if present
+          const folderPath = from.replace(/^["']|["']$/g, '').toLowerCase();
+          // Normalize the file path for comparison (handle Windows backslashes)
+          const normalizedPath = f.path.replace(/\\/g, '/').toLowerCase();
+          // Check if the file is within the specified folder
+          return normalizedPath.startsWith(folderPath + '/') || normalizedPath === folderPath;
+        }
       });
-    } else {
-      // Folder path filter: FROM "folder/path" or FROM folder/path
-      // Remove surrounding quotes if present
-      const folderPath = from.replace(/^["']|["']$/g, '').toLowerCase();
-      results = results.filter((f) => {
-        // Normalize the file path for comparison (handle Windows backslashes)
-        const normalizedPath = f.path.replace(/\\/g, '/').toLowerCase();
-        // Check if the file is within the specified folder
-        return normalizedPath.startsWith(folderPath + '/') || normalizedPath === folderPath;
-      });
-    }
+    });
   }
 
   // Filter by WHERE clauses
@@ -211,10 +214,7 @@ function matchesValue(actual: unknown, expected: string): boolean {
   return String(actual) === cleanExpected;
 }
 
-export function renderDataviewResult(
-  query: DataviewQuery,
-  results: ContentFile[]
-): string {
+export function renderDataviewResult(query: DataviewQuery, results: ContentFile[]): string {
   // Wrap everything in block-language-dataview for Obsidian-style styling
   let content: string;
 

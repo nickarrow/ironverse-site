@@ -442,6 +442,61 @@ const trackData = isProgressTrack
     }
   : null;
 
+// Clock data
+const isClock = ironVaultKind === 'clock';
+const clockData = isClock
+  ? {
+      name: frontmatter.name || title,
+      segments: frontmatter.segments || 4,
+      progress: frontmatter.progress || 0,
+      complete: frontmatter.tags?.includes('complete') || false,
+    }
+  : null;
+
+// Generate clock HTML and replace placeholder
+if (isClock && clockData) {
+  const { name, segments, progress, complete } = clockData;
+
+  // Generate SVG clock widget
+  const generateClockSvg = (segs: number, filled: number): string => {
+    const paths: string[] = [];
+    const radius = 50;
+    const anglePerSegment = (2 * Math.PI) / segs;
+
+    for (let i = 0; i < segs; i++) {
+      const startAngle = i * anglePerSegment - Math.PI / 2;
+      const endAngle = (i + 1) * anglePerSegment - Math.PI / 2;
+
+      const x1 = radius * Math.cos(startAngle);
+      const y1 = radius * Math.sin(startAngle);
+      const x2 = radius * Math.cos(endAngle);
+      const y2 = radius * Math.sin(endAngle);
+
+      const largeArc = anglePerSegment > Math.PI ? 1 : 0;
+      const isFilled = i < filled;
+
+      paths.push(
+        `<path class="clock-segment" d="M0,0 L${x1},${y1} A${radius},${radius} 0 ${largeArc},1 ${x2},${y2} z" aria-selected="${isFilled}"></path>`
+      );
+    }
+
+    return `<svg class="iron-vault-clock-widget" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="-55 -55 110 110" aria-valuenow="${filled}" aria-valuetext="${filled}/${segs}">${paths.join('')}</svg>`;
+  };
+
+  const clockSvg = generateClockSvg(segments, progress);
+  const completionStatus = complete ? ' (Complete)' : '';
+
+  const clockHtml = `
+    <article class="iron-vault-clock" data-complete="${complete}">
+      <header class="clock-name">${name}${completionStatus}</header>
+      ${clockSvg}
+      <div class="clock-segments">${progress}/${segments}</div>
+    </article>
+  `;
+
+  htmlContent = htmlContent.replace('<div class="iron-vault-clock-placeholder"></div>', clockHtml);
+}
+
 // Generate progress track HTML and replace placeholder
 if (isProgressTrack && trackData) {
   const ticks = trackData.progress;

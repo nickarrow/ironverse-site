@@ -187,7 +187,7 @@ if (shouldCollapse) {
   function initMobileToggle() {
     const mobileToggle = document.querySelector('.mobile-menu-toggle');
     const sidebar = document.querySelector('.sidebar');
-    
+
     if (mobileToggle && !mobileToggle.dataset.initialized) {
       mobileToggle.dataset.initialized = 'true';
       mobileToggle.addEventListener('click', () => {
@@ -195,10 +195,10 @@ if (shouldCollapse) {
       });
     }
   }
-  
+
   // Run on initial load
   document.addEventListener('DOMContentLoaded', initMobileToggle);
-  
+
   // Run on View Transitions navigation
   document.addEventListener('astro:after-swap', initMobileToggle);
 </script>

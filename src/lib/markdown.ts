@@ -20,10 +20,7 @@ import {
 } from './dataview';
 import { getFileContentByName } from './content';
 
-export async function processMarkdown(
-  content: string,
-  allFiles: ContentFile[]
-): Promise<string> {
+export async function processMarkdown(content: string, allFiles: ContentFile[]): Promise<string> {
   // Normalize line endings first (Windows CRLF to LF)
   let processed = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
@@ -371,6 +368,10 @@ function remarkIronVault(options: { allFiles: ContentFile[] }) {
           } else if (node.lang === 'iron-vault-character-special-tracks') {
             node.type = 'html';
             node.value = '<div class="iron-vault-character-special-tracks-placeholder"></div>';
+          } else if (node.lang === 'iron-vault-clock') {
+            // Clock blocks are rendered by the page component using frontmatter
+            node.type = 'html';
+            node.value = '<div class="iron-vault-clock-placeholder"></div>';
           } else if (node.lang === 'dataview') {
             // Parse and execute dataview query
             const query = parseDataviewQuery(node.value);

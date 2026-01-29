@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    Iron Vault CSS Variable Mappings
    
    Maps Obsidian CSS variables to site variables
@@ -36,7 +36,6 @@
   --interactive-normal: #363636;
   --interactive-hover: #4a4a4a;
   --interactive-accent: #7c3aed;
-  --interactive-accent-hover: #8b5cf6;
   
   /* Links */
   --link-color: #a78bfa;
@@ -2680,41 +2679,6 @@ table.iron-vault-oracle-table {
 .iv-inline-burn-icon {
   font-size: 0.9em;
 }
-
-/* Shared icon container styles for all inline icons */
-.iv-inline-burn-icon,
-.iv-inline-noroll-icon,
-.iv-inline-oracle-icon,
-.iv-inline-track-icon,
-.iv-inline-clock-icon,
-.iv-inline-meter-icon,
-.iv-inline-initiative-icon,
-.iv-inline-entity-icon,
-.iv-inline-dice-icon,
-.iv-inline-cursed-icon,
-.iv-inline-ooc-icon {
-  display: inline-flex;
-  align-items: center;
-  vertical-align: middle;
-  position: relative;
-  top: -0.1em;
-}
-.iv-inline-burn-icon svg,
-.iv-inline-noroll-icon svg,
-.iv-inline-oracle-icon svg,
-.iv-inline-track-icon svg,
-.iv-inline-clock-icon svg,
-.iv-inline-meter-icon svg,
-.iv-inline-initiative-icon svg,
-.iv-inline-entity-icon svg,
-.iv-inline-dice-icon svg,
-.iv-inline-cursed-icon svg,
-.iv-inline-ooc-icon svg {
-  width: 1em;
-  height: 1em;
-  vertical-align: middle;
-}
-
 .iv-inline-mechanics.oracle {
   border-left: 3px solid var(--text-accent);
 }
@@ -2737,6 +2701,17 @@ table.iron-vault-oracle-table {
 }
 .iv-inline-track-name {
   font-weight: 600;
+}
+.iv-inline-track-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+.iv-inline-track-icon svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
 }
 .iv-inline-track-status {
   font-size: 0.9em;
@@ -2832,17 +2807,11 @@ table.iron-vault-oracle-table {
 .iv-inline-mechanics.meter-increase {
   border-left: 3px solid var(--text-success);
 }
-.iv-inline-mechanics.meter-increase .iv-inline-meter-icon {
-  color: var(--text-success);
-}
 .iv-inline-mechanics.meter-increase .iv-inline-meter-change {
   color: var(--text-success);
 }
 .iv-inline-mechanics.meter-decrease {
   border-left: 3px solid var(--text-error);
-}
-.iv-inline-mechanics.meter-decrease .iv-inline-meter-icon {
-  color: var(--text-error);
 }
 .iv-inline-mechanics.meter-decrease .iv-inline-meter-change {
   color: var(--text-error);
@@ -2870,7 +2839,15 @@ table.iron-vault-oracle-table {
   font-weight: 600;
 }
 .iv-inline-entity-icon {
+  display: inline-flex;
+  align-items: center;
   color: var(--text-accent);
+  vertical-align: middle;
+}
+.iv-inline-entity-icon svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
 }
 .iv-inline-entity-type {
   color: var(--text-muted);

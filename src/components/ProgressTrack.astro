@@ -1,4 +1,9 @@
 ---
+/**
+ * Progress Track Component
+ * Renders a progress track with SVG tick boxes
+ * Matches the Iron Vault plugin HTML structure
+ */
 interface Props {
   name: string;
   rank: string;
@@ -27,12 +32,12 @@ const displayRank = rank.charAt(0).toUpperCase() + rank.slice(1).toLowerCase();
 
 <div class="iron-vault-track" data-rank={rank} data-complete={complete}>
   <div class="track-type">{trackType.toUpperCase()}</div>
-  <div class="track-rank">{displayRank.toUpperCase()}</div>
+  <div class="track-rank">{displayRank}</div>
   <div class="track-name">{name}</div>
   <div class="track-widget">
     <ol>
       {Array.from({ length: 10 }, (_, i) => <li data-value={getBoxValue(i)}>{getBoxValue(i)}</li>)}
     </ol>
   </div>
-  <div class="track-progress">{fullBoxes}/10 ({ticks} ticks)</div>
+  {complete && <div class="track-completion">Complete</div>}
 </div>

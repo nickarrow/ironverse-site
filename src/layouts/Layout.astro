@@ -28,7 +28,7 @@ const { title } = Astro.props;
       // Initialize Pagefind search - runs once since sidebar persists
       function initPagefind() {
         if (document.querySelector('.pagefind-ui')) return; // Already initialized
-        
+
         const script = document.createElement('script');
         script.src = '/pagefind/pagefind-ui.js';
         script.onload = function () {
@@ -52,25 +52,25 @@ const { title } = Astro.props;
         };
         document.head.appendChild(script);
       }
-      
+
       // Update active nav item on navigation
       function updateActiveNavItem() {
         const currentPath = window.location.pathname;
-        document.querySelectorAll('.nav-item').forEach(item => {
+        document.querySelectorAll('.nav-item').forEach((item) => {
           const href = item.getAttribute('href');
           const isActive = currentPath === href || currentPath === href + '/';
           item.classList.toggle('active', isActive);
         });
       }
-      
+
       // Run on initial load
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         initPagefind();
         updateActiveNavItem();
       });
-      
+
       // Run on View Transitions navigation
-      document.addEventListener('astro:after-swap', function() {
+      document.addEventListener('astro:after-swap', function () {
         updateActiveNavItem();
       });
     </script>
@@ -80,11 +80,9 @@ const { title } = Astro.props;
         const toggleBtn = document.querySelector('.toggle-all-folders');
         const iconExpand = toggleBtn?.querySelector('.icon-expand') as HTMLElement;
         const iconCollapse = toggleBtn?.querySelector('.icon-collapse') as HTMLElement;
-        
+
         const allFolders = document.querySelectorAll('.nav-folder');
-        const allCollapsed = Array.from(allFolders).every((f) =>
-          f.classList.contains('collapsed')
-        );
+        const allCollapsed = Array.from(allFolders).every((f) => f.classList.contains('collapsed'));
 
         if (iconExpand && iconCollapse) {
           iconExpand.style.display = allCollapsed ? 'block' : 'none';
@@ -113,7 +111,7 @@ const { title } = Astro.props;
       function initSidebar() {
         const sidebar = document.querySelector('.sidebar');
         if (!sidebar) return;
-        
+
         // If already initialized (sidebar persisted via View Transitions),
         // just expand to active item and scroll
         if (sidebar.dataset.initialized === 'true') {
@@ -168,7 +166,7 @@ const { title } = Astro.props;
         document.querySelectorAll('.callout.is-collapsible .callout-title').forEach((title) => {
           if ((title as HTMLElement).dataset.initialized === 'true') return;
           (title as HTMLElement).dataset.initialized = 'true';
-          
+
           title.addEventListener('click', () => {
             const callout = title.closest('.callout');
             const content = callout?.querySelector('.callout-content') as HTMLElement;
@@ -190,7 +188,7 @@ const { title } = Astro.props;
         initSidebar();
         initCallouts();
       });
-      
+
       // Run on View Transitions navigation
       document.addEventListener('astro:after-swap', () => {
         initSidebar();
