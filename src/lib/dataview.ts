@@ -8,6 +8,7 @@ export interface ContentFile {
   slug: string;
   title: string;
   frontmatter: Record<string, unknown>;
+  mtime?: Date;
 }
 
 export interface DataviewQuery {
@@ -88,6 +89,16 @@ function parseFields(fieldsStr: string): string[] {
 }
 
 function parseWhereClause(str: string): WhereClause | null {
+  // Handle contains(field, "value") syntax
+  const containsMatch = str.match(/^contains\s*\(\s*([^,]+)\s*,\s*"([^"]+)"\s*\)$/i);
+  if (containsMatch) {
+    return {
+      field: containsMatch[1].trim(),
+      operator: 'contains',
+      value: containsMatch[2].trim(),
+    };
+  }
+
   // Handle: field = value, field = [[Link]], field != value
   const eqMatch = str.match(/^(\S+)\s*=\s*(.+)$/);
   if (eqMatch) {
@@ -156,6 +167,8 @@ export function executeDataviewQuery(query: DataviewQuery, files: ContentFile[])
         return matchesValue(value, compareValue);
       } else if (where.operator === '!=') {
         return !matchesValue(value, compareValue);
+      } else if (where.operator === 'contains') {
+        return containsValue(value, compareValue);
       }
       return true;
     });
@@ -183,7 +196,8 @@ function getFieldValue(file: ContentFile, field: string): unknown {
   // Handle special fields
   if (field === 'file.link') return file.title;
   if (field === 'file.name') return file.title;
-  if (field === 'file.mtime') return 0; // We don't track mtime
+  if (field === 'file.path') return file.path;
+  if (field === 'file.mtime') return file.mtime || new Date(0);
 
   // Handle frontmatter fields with potential wikilink values
   let value = file.frontmatter[field];
@@ -212,6 +226,20 @@ function matchesValue(actual: unknown, expected: string): boolean {
   }
 
   return String(actual) === cleanExpected;
+}
+
+function containsValue(actual: unknown, searchStr: string): boolean {
+  if (actual === undefined || actual === null) return false;
+
+  if (typeof actual === 'string') {
+    return actual.toLowerCase().includes(searchStr.toLowerCase());
+  }
+
+  if (Array.isArray(actual)) {
+    return actual.some((v) => containsValue(v, searchStr));
+  }
+
+  return String(actual).toLowerCase().includes(searchStr.toLowerCase());
 }
 
 export function renderDataviewResult(query: DataviewQuery, results: ContentFile[]): string {
@@ -265,7 +293,8 @@ function renderTable(query: DataviewQuery, results: ContentFile[]): string {
           if (c.field === 'file.link') {
             value = `<a href="/${file.slug}">${escapeHtml(file.title)}</a>`;
           } else {
-            const rawValue = file.frontmatter[c.field];
+            // Use getFieldValue to handle special fields like file.mtime, file.path, etc.
+            const rawValue = getFieldValue(file, c.field);
             value = formatValue(rawValue);
           }
 
@@ -283,6 +312,11 @@ function renderTable(query: DataviewQuery, results: ContentFile[]): string {
 function formatValue(value: unknown): string {
   if (value === undefined || value === null) return '';
 
+  // Handle Date objects
+  if (value instanceof Date) {
+    return formatDate(value);
+  }
+
   // Handle wikilinks
   if (typeof value === 'string' && value.startsWith('[[') && value.endsWith(']]')) {
     const linkText = value.slice(2, -2);
@@ -295,6 +329,15 @@ function formatValue(value: unknown): string {
   }
 
   return escapeHtml(String(value));
+}
+
+function formatDate(date: Date): string {
+  // Format as "Month Day, Year" (e.g., "February 8, 2026")
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }
 
 function escapeHtml(text: string): string {

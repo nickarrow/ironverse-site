@@ -37,6 +37,7 @@ export function getAllContentFiles(): ContentFile[] {
         }
       } else if (entry.name.endsWith('.md')) {
         const content = fs.readFileSync(fullPath, 'utf-8');
+        const stats = fs.statSync(fullPath);
         const { data: frontmatter, content: body } = matter(content);
 
         const title = extractTitle(body, entry.name);
@@ -47,6 +48,7 @@ export function getAllContentFiles(): ContentFile[] {
           slug,
           title,
           frontmatter,
+          mtime: stats.mtime,
         });
       }
     }
